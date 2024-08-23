@@ -1,31 +1,12 @@
 const std = @import("std");
-const parseArgs = @import("args").parseWithVerb;
+const args = @import("args.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    var args = try std.process.argsWithAllocator(allocator);
-    defer args.deinit();
-
-    _ = args.skip(); // program name
-    _ = args.skip(); // atlas-provided root command name
-
-    const opts = try parseArgs(
-        struct {
-            help: bool = false,
-            pub const shorthands = .{ .h = "help" };
-        },
-        union(enum) {
-            hello: void,
-            printenv: void,
-            stdinreader: void,
-        },
-        &args,
-        allocator,
-        .print,
-    );
+    const opts = try args.parse(allocator);
     defer opts.deinit();
 
     if (opts.options.help) {
@@ -48,7 +29,7 @@ fn help() void {
 }
 
 fn hello() !void {
-    std.debug.print("Hello world!\n", .{});
+    std.debug.print("Hello zig ⚡!\n", .{});
 }
 
 fn printenv(allocator: std.mem.Allocator) !void {
