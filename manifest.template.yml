@@ -1,0 +1,10 @@
+name: atlas-cli-zig-plugin
+description: this is an example plugin in zig
+version: $VERSION
+github:
+  owner: $GITHUB_REPOSITORY_OWNER
+  name: $GITHUB_REPOSITORY_NAME
+binary: $BINARY
+commands:
+  zig-example:
+    description: Root command of the atlas cli zig plugin example
