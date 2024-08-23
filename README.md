@@ -1,6 +1,6 @@
 # atlas-cli-zig-plugin
 
-at [atlas cli plugin](https://github.com/mongodb/atlas-cli-plugin-example) template for zig ⚡
+an [atlas cli plugin](https://github.com/mongodb/atlas-cli-plugin-example) template for zig ⚡
 
 ## 🚀 publishing
 
