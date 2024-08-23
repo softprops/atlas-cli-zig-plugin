@@ -15,6 +15,7 @@ pub fn main() !void {
     }
     if (opts.verb) |verb| {
         try switch (verb) {
+            .echo => echo(allocator),
             .hello => hello(),
             .printenv => printenv(allocator),
             .stdinreader => stdinreader(allocator),
@@ -24,8 +25,14 @@ pub fn main() !void {
     }
 }
 
+fn echo(allocator: std.mem.Allocator) !void {
+    var in = try std.process.argsWithAllocator(allocator);
+    for (0..3) |_| _ = in.skip();
+    while (in.next()) |arg| std.debug.print("{s} ", .{arg});
+}
+
 fn help() void {
-    std.debug.print("Available Commands: hello, printenv, or stdinreader\n", .{});
+    std.debug.print("Available Commands: echo, hello, printenv, or stdinreader\n", .{});
 }
 
 fn hello() !void {

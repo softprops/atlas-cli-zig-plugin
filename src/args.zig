@@ -8,6 +8,7 @@ const Common = struct {
 };
 
 const Commands = union(enum) {
+    echo: void,
     hello: void,
     printenv: void,
     stdinreader: void,
