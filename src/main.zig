@@ -27,6 +27,7 @@ pub fn main() !void {
 
 fn echo(allocator: std.mem.Allocator) !void {
     var in = try std.process.argsWithAllocator(allocator);
+    defer in.deinit();
     for (0..3) |_| _ = in.skip();
     while (in.next()) |arg| std.debug.print("{s} ", .{arg});
 }
