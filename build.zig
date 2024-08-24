@@ -22,10 +22,12 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
 
-    exe.root_module.addImport("args", b.dependency(
-        "args",
-        .{ .target = target, .optimize = optimize },
-    ).module("args"));
+    for ([_][]const u8{ "args", "tomlz" }) |dep| {
+        exe.root_module.addImport(
+            dep,
+            b.dependency(dep, .{ .target = target, .optimize = optimize }).module(dep),
+        );
+    }
 
     b.installArtifact(exe);
 

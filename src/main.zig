@@ -1,5 +1,7 @@
 const std = @import("std");
 const args = @import("args.zig");
+const tomlz = @import("tomlz");
+const config = @import("config.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -19,9 +21,10 @@ pub fn main() !void {
             .hello => hello(),
             .printenv => printenv(allocator),
             .stdinreader => stdinreader(allocator),
+            .listprofiles => listProfiles(allocator),
         };
     } else {
-        help();
+        try @import("args").printHelp(args.Common, "zig-example", std.io.getStdOut().writer());
     }
 }
 
@@ -55,4 +58,15 @@ fn stdinreader(allocator: std.mem.Allocator) !void {
     defer allocator.free(name);
 
     std.debug.print("Hello, {s}!\n", .{name});
+}
+
+fn listProfiles(allocator: std.mem.Allocator) !void {
+    if (try config.profileNames(allocator)) |names| {
+        var namesMut = names;
+        defer namesMut.deinit();
+        std.debug.print("PROFILE NAME\n", .{});
+        while (namesMut.next()) |name| {
+            std.debug.print("{s}\n", .{name});
+        }
+    }
 }
