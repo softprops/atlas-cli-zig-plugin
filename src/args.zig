@@ -33,26 +33,35 @@ const Commands = union(enum) {
     },
 };
 
+const Cli = ParseArgsResult(Common, Commands);
+
 pub fn printHelp(writer: anytype) !void {
-    try @import("args").printHelp(Common, "zig-example", writer);
-    try writer.writeAll("\nAvailable Commands:\n");
-    const maxLen = comptime blk: {
-        var max = 0;
-        for (@typeInfo(Commands).Union.fields) |fld| {
-            max = @max(max, fld.name.len);
-        }
-        break :blk std.fmt.comptimePrint("{d}", .{max});
-    };
-    inline for (@typeInfo(Commands).Union.fields) |fld| {
-        std.debug.print("  {s:<" ++ maxLen ++ "}", .{fld.name});
-        if (@hasDecl(fld.type, "meta")) {
-            const Meta = @TypeOf(fld.type.meta);
-            if (@hasField(Meta, "full_text")) {
-                try writer.print("\t{s}", .{fld.type.meta.full_text});
+    try @import("args").printHelp(Cli.GenericOptions, "zig-example", writer);
+    // until https://github.com/ikskuh/zig-args/issues/58
+    switch (@typeInfo(Cli.Verbs)) {
+        .Union => |commands| {
+            try writer.writeAll("\nAvailable Commands:\n");
+            const maxLen = comptime blk: {
+                var max = 0;
+                for (commands.fields) |fld| {
+                    max = @max(max, fld.name.len);
+                }
+                break :blk std.fmt.comptimePrint("{d}", .{max});
+            };
+            inline for (commands.fields) |fld| {
+                std.debug.print("  {s:<" ++ maxLen ++ "}", .{fld.name});
+                if (@hasDecl(fld.type, "meta")) {
+                    const Meta = @TypeOf(fld.type.meta);
+                    if (@hasField(Meta, "full_text")) {
+                        try writer.print("\t{s}\n", .{fld.type.meta.full_text});
+                    }
+                }
             }
-        }
-        std.debug.print("\n", .{});
+        },
+        else => {},
     }
+
+    std.debug.print("\n", .{});
 }
 
 pub fn parse(allocator: std.mem.Allocator) !ParseArgsResult(Common, Commands) {
