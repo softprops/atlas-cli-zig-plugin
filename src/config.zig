@@ -17,7 +17,8 @@ pub const ProfileNames = struct {
         const file = std.fs.openFileAbsolute(path, .{ .mode = .read_only }) catch {
             return null;
         };
-        const bytes = try file.readToEndAlloc(arena.allocator(), 1024 * 1024 * 4);
+        var reader = std.io.bufferedReader(file.reader());
+        const bytes = try reader.reader().readAllAlloc(arena.allocator(), 1024 * 1024 * 4);
         return .{
             .iter = (try tomlz.parse(arena.allocator(), bytes)).table.keyIterator(),
             .arena = arena,

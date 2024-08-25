@@ -23,6 +23,14 @@ const Commands = union(enum) {
     listprofiles: void,
 };
 
+pub fn printHelp(writer: anytype) !void {
+    try @import("args").printHelp(Common, "zig-example", writer);
+    try writer.writeAll("\nAvailable Commands:\n");
+    inline for (@typeInfo(Commands).Union.fields) |fld| {
+        std.debug.print("  {s}\n", .{fld.name});
+    }
+}
+
 pub fn parse(allocator: std.mem.Allocator) !ParseArgsResult(Common, Commands) {
     var args = try std.process.argsWithAllocator(allocator);
     defer args.deinit();

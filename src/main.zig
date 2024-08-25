@@ -12,7 +12,7 @@ pub fn main() !void {
     defer opts.deinit();
 
     if (opts.options.help) {
-        help();
+        try args.printHelp(std.io.getStdOut().writer());
         return;
     }
     if (opts.verb) |verb| {
@@ -24,7 +24,7 @@ pub fn main() !void {
             .listprofiles => listProfiles(allocator),
         };
     } else {
-        try @import("args").printHelp(args.Common, "zig-example", std.io.getStdOut().writer());
+        try args.printHelp(std.io.getStdOut().writer());
     }
 }
 
@@ -33,10 +33,6 @@ fn echo(allocator: std.mem.Allocator) !void {
     defer in.deinit();
     for (0..3) |_| _ = in.skip();
     while (in.next()) |arg| std.debug.print("{s} ", .{arg});
-}
-
-fn help() void {
-    std.debug.print("Available Commands: echo, hello, printenv, or stdinreader\n", .{});
 }
 
 fn hello() !void {
