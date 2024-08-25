@@ -36,7 +36,9 @@ pub const ProfileNames = struct {
     }
 };
 
-/// Returns an iterator over config profile names
+/// Returns an iterator over config profile names,
+/// an error if config file is invalid or none of there
+/// is no config file
 pub fn profileNames(allocator: std.mem.Allocator) !?ProfileNames {
     return try ProfileNames.init(allocator);
 }

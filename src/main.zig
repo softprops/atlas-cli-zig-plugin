@@ -61,12 +61,12 @@ fn stdinreader(allocator: std.mem.Allocator) !void {
 }
 
 fn listProfiles(allocator: std.mem.Allocator) !void {
-    if (try config.profileNames(allocator)) |names| {
-        var namesMut = names;
-        defer namesMut.deinit();
-        std.debug.print("PROFILE NAME\n", .{});
-        while (namesMut.next()) |name| {
-            std.debug.print("{s}\n", .{name});
-        }
+    var names = try config.profileNames(allocator) orelse {
+        return;
+    };
+    defer names.deinit();
+    std.debug.print("PROFILE NAME\n", .{});
+    while (names.next()) |name| {
+        std.debug.print("{s}\n", .{name});
     }
 }
