@@ -8,7 +8,7 @@ pub const Common = struct {
     pub const meta = .{
         .name = "zig-example",
         .full_text = "Root command of the zig atlas cli plugin example",
-        .usage_summary = "[--help]",
+        .usage_summary = "<command> [--help|-h]",
         .option_docs = .{
             .help = "show this message",
         },
@@ -16,18 +16,35 @@ pub const Common = struct {
 };
 
 const Commands = union(enum) {
-    echo: void,
-    hello: void,
-    printenv: void,
-    stdinreader: void,
-    listprofiles: void,
+    echo: struct {
+        pub const meta = .{ .full_text = "Echos the input args" };
+    },
+    hello: struct {
+        pub const meta = .{ .full_text = "The Hello World command" };
+    },
+    printenv: struct {
+        pub const meta = .{ .full_text = "Prints environment variables" };
+    },
+    stdinreader: struct {
+        pub const meta = .{ .full_text = "Reads name and prints it" };
+    },
+    listprofiles: struct {
+        pub const meta = .{ .full_text = "Return a list of available profiles by name" };
+    },
 };
 
 pub fn printHelp(writer: anytype) !void {
     try @import("args").printHelp(Common, "zig-example", writer);
     try writer.writeAll("\nAvailable Commands:\n");
     inline for (@typeInfo(Commands).Union.fields) |fld| {
-        std.debug.print("  {s}\n", .{fld.name});
+        std.debug.print("  {s:<8}", .{fld.name});
+        if (@hasDecl(fld.type, "meta")) {
+            const Meta = @TypeOf(fld.type.meta);
+            if (@hasField(Meta, "full_text")) {
+                try writer.print("\t{s}", .{fld.type.meta.full_text});
+            }
+        }
+        std.debug.print("\n", .{});
     }
 }
 
