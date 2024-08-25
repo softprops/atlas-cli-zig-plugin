@@ -36,8 +36,15 @@ const Commands = union(enum) {
 pub fn printHelp(writer: anytype) !void {
     try @import("args").printHelp(Common, "zig-example", writer);
     try writer.writeAll("\nAvailable Commands:\n");
+    const maxLen = comptime blk: {
+        var max = 0;
+        for (@typeInfo(Commands).Union.fields) |fld| {
+            max = @max(max, fld.name.len);
+        }
+        break :blk std.fmt.comptimePrint("{d}", .{max});
+    };
     inline for (@typeInfo(Commands).Union.fields) |fld| {
-        std.debug.print("  {s:<8}", .{fld.name});
+        std.debug.print("  {s:<" ++ maxLen ++ "}", .{fld.name});
         if (@hasDecl(fld.type, "meta")) {
             const Meta = @TypeOf(fld.type.meta);
             if (@hasField(Meta, "full_text")) {
