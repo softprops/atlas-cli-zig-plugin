@@ -8,7 +8,7 @@ pub const Common = struct {
     pub const meta = .{
         .name = "zig-example",
         .full_text = "Root command of the zig atlas cli plugin example",
-        .usage_summary = "<command> [--help|-h]",
+        .usage_summary = "<command> [flags]",
         .option_docs = .{
             .help = "show this message",
         },
